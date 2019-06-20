@@ -1,2 +1,69 @@
 ---
 # Role default lower priority variables
+
+# SSH key file to use for git operations
+
+# git_clone_key_file: ~/.ssh/id_rsa
+
+# Repository URL
+
+git_clone_repo:
+
+# Version to clone
+
+# git_clone_version: HEAD
+
+# Create or not a branch after cloning
+
+git_clone_create_branch: no
+
+# Branch name. If not defined and `git_clone_create_branch` is `yes` a random
+# one will be created
+
+#git_clone_branch_name:
+
+# Directory to store repository clone. If not defined a random one will be
+# created
+
+# git_clone_dest:
+
+# Discard modified files in repository clone
+
+git_clone_force: no
+
+# Name of the remote.
+
+git_clone_remote: origin
+
+# The path to place the cloned repository. If specified, git repository can be
+# separated from working tree.
+
+#git_cone_separate_git_dir:
+
+# SSH options to use
+
+#git_clone_ssh_opts:
+
+# Track submodules or not. If yes, submodules will track the latest commit on
+# their master branch (or other branch specified in .gitmodules). If no,
+# submodules will be kept at the revision specified by the main project
+
+git_clone_track_submodules: no
+
+# Update or not cloned repositoriy. If no, do not retrieve new revisions from the
+# origin repository
+
+git_clone_update: yes
+
+# If no, repository will be cloned without the --recursive option, skipping
+# sub-modules.
+
+git_clone_recursive: yes
+
+# Accept or not host key during git ssh operations
+
+git_clone_accept_hostkey: yes
+
+# Hide or not sensitive information
+
+git_clone_no_log: yes
