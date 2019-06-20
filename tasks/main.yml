@@ -1,2 +1,54 @@
 ---
 # Role tasks
+
+- block:
+    - name: Create temporary directory for git repository clone
+      tempfile:
+        state: directory
+        suffix: tmp
+      register: git_clone_create_tempdir_result
+      when: git_clone_dest is not defined
+
+    - name: Setup fact with git repository clone path
+      set_fact:
+        git_clone_repo_dir: >-
+          {{ git_clone_dest | default(git_clone_create_tempdir_result.path) }}
+
+    - name: Setup directory for git repository clone
+      file:
+        path: "{{ git_clone_repo_dir }}"
+        state: directory
+      when: git_clone_dest is defined
+
+    - name: Clone git repository
+      git:
+        accept_hostkey: "{{ git_clone_accept_hostkey }}"
+        dest: "{{ git_clone_repo_dir }}"
+        force: "{{ git_clone_force | default(omit) }}"
+        key_file: "{{ git_clone_key_file | default(omit) }}"
+        recursive: "{{ git_clone_recursive | default(omit) }}"
+        remote: "{{ git_clone_remote | default(omit) }}"
+        repo: "{{ git_clone_repo }}"
+        separate_git_dir: "{{ git_clone_separate_git_dir | default(omit) }}"
+        ssh_opts: "{{ git_clone_ssh_opts | default(omit) }}"
+        track_submodules: "{{ git_clone_track_submodules | default(omit) }}"
+        update: "{{ git_clone_update | default(omit) }}"
+        version: "{{ git_clone_version | default(omit) }}"
+      no_log: "{{ git_clone_no_log | default(true) }}"
+
+    - name: Generate random branch name
+      set_fact:
+        git_clone_branch_name: >-
+          {{ 999999999999999999999999999999999999 | random | to_uuid }}
+      when:
+        - git_clone_create_branch | bool
+        - git_clone_branch_name is not defined
+
+    - name: Create branch into git cloned project
+      command: "git checkout -b {{ git_clone_branch_name }}"
+      args:
+        chdir: "{{ git_clone_repo_dir }}"
+        warn: no
+      when: git_clone_create_branch | bool
+  tags:
+    - role::git_clone

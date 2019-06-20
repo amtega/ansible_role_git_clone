@@ -1,2 +1,39 @@
 ---
 # Tasks for testing role
+
+- name: Run idempotence test
+  hosts: localhost
+  roles:
+    - role: amtega.docker_presets
+      vars:
+        docker_presets_images_json_query: >-
+          [? starts_with(name, `centos-6`)
+             || starts_with(name, `centos-7`)
+             || starts_with(name, `fedora-29`)
+             || starts_with(name, `fedora-30`) ]
+
+    - role: amtega.docker_sandbox
+      vars:
+        docker_sandbox_state: started
+  tags:
+    - sandbox
+
+- name: Test git_clone role
+  hosts: docker_sandbox_containers
+  roles:
+    - role: amtega.git_clone
+      vars:
+        git_clone_repo: https://github.com/amtega/ansible_role_ansible.git
+        git_clone_dest: /tmp/git_clone
+  tags:
+    - idempotence
+
+- name: Cleanup docker docker sandbox
+  hosts: localhost
+  roles:
+    - role: amtega.docker_sandbox
+      vars:
+        docker_sandbox_state: absent
+  tags:
+    - cleanup
+    - sandbox
