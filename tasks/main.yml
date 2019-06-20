@@ -48,6 +48,7 @@
       command: "git checkout -b {{ git_clone_branch_name }}"
       args:
         chdir: "{{ git_clone_repo_dir }}"
+        warn: no
       when: git_clone_create_branch | bool
   tags:
     - role::git_clone

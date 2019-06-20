@@ -4,7 +4,7 @@
 galaxy_info:
   role_name: git_clone
   author: Juan Antonio Valiño García
-  description: Clone a git repository 
+  description: Clone a git repository
   company: AMTEGA - Xunta de Galicia
   license: GPLv3 or EUPL
   min_ansible_version: 2.7
