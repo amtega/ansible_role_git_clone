@@ -6,6 +6,10 @@ This is an [Ansible](http://www.ansible.com) role to clone a git repository.
 
 A list of all the default variables for this role is available in `defaults/main.yml`.
 
+The role setups the following facts:
+
+- `git_clone_branch_name`: string with the name of the branch created (useful if it was generated randomly)
+
 ## Example Playbook
 
 This is an example playbook:
