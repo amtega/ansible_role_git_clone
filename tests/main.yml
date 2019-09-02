@@ -25,6 +25,8 @@
       vars:
         git_clone_repo: https://github.com/amtega/ansible_role_ansible.git
         git_clone_dest: /tmp/git_clone
+        git_clone_upstream_master_url: >-
+          https://github.com/amtega/ansible_role_ansible.git
   tags:
     - idempotence
 

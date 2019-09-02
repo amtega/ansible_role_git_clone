@@ -2,6 +2,8 @@
 
 This is an [Ansible](http://www.ansible.com) role to clone a git repository.
 
+The role can work in coordination with [amtega.gitlab_fork](https://galaxy.ansible.com/amtega/gitlab_fork) role to support pull of the upstream/master into the cloned project. See role variables for details.
+
 ## Role Variables
 
 A list of all the default variables for this role is available in `defaults/main.yml`.

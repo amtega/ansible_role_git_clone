@@ -1,0 +1,10 @@
+#!/bin/sh
+
+BASE_OPTS="-o BatchMode=yes"
+{% if git_clone_key_file is defined %}
+SSH_KEY_OPTS="-i {{ git_clone_key_file }} -o IdentitiesOnly=yes"
+{% else %}
+SSH_KEY_OPTS=""
+{% endif %}
+
+ssh $BASEOPTS $SSH_KEY_OPTS "$@"
