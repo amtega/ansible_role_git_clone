@@ -60,6 +60,17 @@ git_clone_update: yes
 
 git_clone_recursive: yes
 
+# Pull upstream/master branch after clone
+
+git_clone_pull_upstream_master: no
+
+# URL to the upstream/master branch. If the role amtega.gitlab_fork was called
+# before, you can left undefined this variable because the role autodetects the
+# forked project and pulls the upstream/master into the cloned project. If other
+# case you can set the upstream/master explicitly to the value you want
+
+#git_clone_upstream_master_url:
+
 # Accept or not host key during git ssh operations
 
 git_clone_accept_hostkey: yes

@@ -36,6 +36,75 @@
         version: "{{ git_clone_version | default(omit) }}"
       no_log: "{{ git_clone_no_log | default(true) }}"
 
+    - block:
+        - name: Setup git repository remote upstream
+          shell: >-
+            git --no-pager remote add upstream \
+            {{ git_clone_upstream_master_url_to_use }}
+          args:
+            chdir: "{{ git_clone_repo_dir }}"
+          when:
+            - >-
+              git_clone_upstream_master_url is defined
+              or gitlab_fork_fact is defined
+            - git_clone_pull_upstream_master | bool
+          vars:
+            git_clone_upstream_master_gitlab_url: >-
+              {{ (git_clone_repo is search("http"))
+                 | ternary(
+                     gitlab_fork_fact.forked_from_project.http_url_to_repo
+                     | default(""),
+                     gitlab_fork_fact.forked_from_project.ssh_url_to_repo
+                     | default("")
+                     | regex_replace("(.+)@(.+):(.+)",
+                                     "\1@"
+                                     + git_clone_repo
+                                       | regex_replace("(.+)@(.+):(.+)",
+                                                       "\2")
+                                     + ":\3")) }}
+
+            git_clone_upstream_master_url_to_use: >-
+              {{ (git_clone_upstream_master_url is defined)
+                 | ternary(
+                     git_clone_upstream_master_url | default(""),
+                     git_clone_upstream_master_gitlab_url | default("")) }}
+
+        - name: Create temporary file for git ssh wrapper
+          tempfile:
+            state: file
+          register: git_clone_ssh_wrapper_tmp_result
+
+        - name: Setup git ssh wrapper
+          template:
+            dest: "{{ git_clone_ssh_wraper }}"
+            src: ssh_wrapper.sh.j2
+            mode: "0750"
+
+        - name: Pull upstream/master branch
+          shell: git --no-pager pull upstream master
+          args:
+            chdir: "{{ git_clone_repo_dir }}"
+          register: git_clone_pull_upstream_master_result
+          changed_when: >-
+            not git_clone_pull_upstream_master_result.stdout
+                is search("Already up.to.date")
+          failed_when:
+            not git_clone_pull_upstream_master_result.stdout
+                is search("Already up.to.date")
+            and not git_clone_pull_upstream_master_result.stdout
+                    is search("Fast.forward")
+          environment:
+            LANGUAGE: en_US
+            GIT_SSH: "{{ git_clone_ssh_wraper }}"
+
+        - name: Remove temporary file for git ssh wrapper
+          file:
+            path: "{{ git_clone_ssh_wraper }}"
+            state: absent
+      when: git_clone_pull_upstream_master | bool
+      vars:
+        git_clone_ssh_wraper: "{{ git_clone_ssh_wrapper_tmp_result.path }}"
+
     - name: Generate random branch name
       set_fact:
         git_clone_branch_name: >-
