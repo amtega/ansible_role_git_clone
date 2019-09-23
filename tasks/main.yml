@@ -1,6 +1,22 @@
 ---
 # Role tasks
 
+- include_role:
+    name: amtega.check_platform
+  vars:
+    check_platform_distributions:
+      centos: 6
+      fedora: 29
+      rhel: 6
+
+- include_role:
+    name: amtega.packages
+  vars:
+    packages_os:
+      all:
+        all:
+          git: present
+
 - block:
     - name: Create temporary directory for git repository clone
       tempfile:
@@ -34,6 +50,7 @@
         track_submodules: "{{ git_clone_track_submodules | default(omit) }}"
         update: "{{ git_clone_update | default(omit) }}"
         version: "{{ git_clone_version | default(omit) }}"
+      register: git_clone_result
       no_log: "{{ git_clone_no_log | default(true) }}"
 
     - block:
@@ -69,38 +86,43 @@
                      git_clone_upstream_master_url | default(""),
                      git_clone_upstream_master_gitlab_url | default("")) }}
 
-        - name: Create temporary file for git ssh wrapper
-          tempfile:
-            state: file
-          register: git_clone_ssh_wrapper_tmp_result
+        - block:
+            - name: Create temporary file for git ssh wrapper
+              tempfile:
+                state: file
+              register: git_clone_ssh_wrapper_tmp_result
 
-        - name: Setup git ssh wrapper
-          template:
-            dest: "{{ git_clone_ssh_wraper }}"
-            src: ssh_wrapper.sh.j2
-            mode: "0750"
+            - name: Setup git ssh wrapper
+              template:
+                dest: "{{ git_clone_ssh_wraper }}"
+                src: ssh_wrapper.sh.j2
+                mode: "0750"
 
-        - name: Pull upstream/master branch
-          shell: git --no-pager pull upstream master
-          args:
-            chdir: "{{ git_clone_repo_dir }}"
-          register: git_clone_pull_upstream_master_result
-          changed_when: >-
-            not git_clone_pull_upstream_master_result.stdout
-                is search("Already up.to.date")
-          failed_when:
-            not git_clone_pull_upstream_master_result.stdout
-                is search("Already up.to.date")
-            and not git_clone_pull_upstream_master_result.stdout
+            - name: Pull upstream/master branch
+              shell: git --no-pager pull upstream master
+              args:
+                chdir: "{{ git_clone_repo_dir }}"
+              register: git_clone_pull_upstream_master_result
+              changed_when: >-
+                not git_clone_pull_upstream_master_result.stdout
+                    is search("Already up.to.date")
+              failed_when:
+                not git_clone_pull_upstream_master_result.stdout
+                    is search("Already up.to.date")
+                and not git_clone_pull_upstream_master_result.stdout
                     is search("Fast.forward")
-          environment:
-            LANGUAGE: en_US
-            GIT_SSH: "{{ git_clone_ssh_wraper }}"
+              environment:
+                LANGUAGE: en_US
+                GIT_SSH: "{{ git_clone_ssh_wraper }}"
 
-        - name: Remove temporary file for git ssh wrapper
-          file:
-            path: "{{ git_clone_ssh_wraper }}"
-            state: absent
+            - name: Remove temporary file for git ssh wrapper
+              file:
+                path: "{{ git_clone_ssh_wraper }}"
+                state: absent
+          when:
+            - git_clone_upstream_master_url is defined
+            - git_clone_pull_upstream_master | bool
+
       when: git_clone_pull_upstream_master | bool
       vars:
         git_clone_ssh_wraper: "{{ git_clone_ssh_wrapper_tmp_result.path }}"
