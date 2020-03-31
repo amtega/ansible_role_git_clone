@@ -1,22 +1,6 @@
 ---
 # Role tasks
 
-- include_role:
-    name: amtega.check_platform
-  vars:
-    check_platform_distributions:
-      centos: 6
-      fedora: 29
-      rhel: 6
-
-- include_role:
-    name: amtega.packages
-  vars:
-    packages_os:
-      all:
-        all:
-          git: present
-
 - block:
     - name: Create temporary directory for git repository clone
       tempfile:
