@@ -75,6 +75,10 @@ git_clone_pull_upstream_master: no
 
 git_clone_accept_hostkey: yes
 
+# Temporary dir for clone operations
+
+git_clone_tmp_dir: /var/tmp
+
 # Hide or not sensitive information
 
 git_clone_no_log: yes

@@ -4,6 +4,7 @@
 - block:
     - name: Create temporary directory for git repository clone
       tempfile:
+        path: "{{ git_clone_tmp_dir }}"
         state: directory
         suffix: tmp
       register: git_clone_create_tempdir_result
