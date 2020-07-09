@@ -37,6 +37,8 @@
         version: "{{ git_clone_version | default(omit) }}"
       register: git_clone_result
       no_log: "{{ git_clone_no_log | default(true) }}"
+      environment:
+        TMPDIR: "{{ git_clone_tmp_dir }}"
 
     - block:
         - name: Setup git repository remote upstream
