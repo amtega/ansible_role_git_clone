@@ -19,6 +19,7 @@
       file:
         path: "{{ git_clone_repo_dir }}"
         state: directory
+        mode: "{{ git_clone_dest_mode }}"
       when: git_clone_dest is defined
 
     - name: Clone git repository
