@@ -27,6 +27,10 @@ git_clone_create_branch: no
 
 # git_clone_dest:
 
+# Mode for destination directory
+
+git_clone_dest_mode: 0750
+
 # Discard modified files in repository clone
 
 git_clone_force: no
@@ -50,8 +54,8 @@ git_clone_remote: origin
 
 git_clone_track_submodules: no
 
-# Update or not cloned repositoriy. If no, do not retrieve new revisions from the
-# origin repository
+# Update or not cloned repositoriy. If no, do not retrieve new revisions from
+# the origin repository
 
 git_clone_update: yes
 
